@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Finding errors in R</title>
+  <meta name="author" content="" />
+
+  
+  <meta name="keywords" content="RStats, Statistics, Diversity">	
+  
+
+  
+  <meta name="description" content="Bruna&#39;s Homepage">	
+  
+
+  <meta name="generator" content="Hugo 0.71.0" />
+
+  <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css">
+  <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,500,700,800' rel='stylesheet' type='text/css'>
+
+  
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  
+  <link href="https://brunaw.com/css/animate.css" rel="stylesheet">
+
+  
+  
+    <link href="https://brunaw.com/css/style.pink.css" rel="stylesheet" id="theme-stylesheet">
+  
+
+
+  
+  <link href="https://brunaw.com/css/custom.css" rel="stylesheet">
+
+  
+  
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+  <link rel="shortcut icon" href="https://brunaw.com/img/beach.png" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="https://brunaw.com/img/apple-touch-icon.png" />
+  
+
+  <link href="https://brunaw.com/css/owl.carousel.css" rel="stylesheet">
+  <link href="https://brunaw.com/css/owl.theme.css" rel="stylesheet">
+
+  <link rel="alternate" href="https://brunaw.com/index.xml" type="application/rss+xml" title="Bruna Wundervald">
+
+  
+  <meta property="og:title" content="Finding errors in R" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="/blog/2018/10/06/2018-10-06-finding-errors//" />
+  <meta property="og:image" content="img/beach2.png" />
+
+</head>
+
+
+  <body>
+
+    <div id="all">
+
+        <header>
+
+          <div class="navbar-affixed-top" data-spy="affix" data-offset-top="200">
+
+    <div class="navbar navbar-default yamm" role="navigation" id="navbar">
+
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand home" href="https://brunaw.com/">
+                    <img src="https://brunaw.com/img/beach2.png" alt="Finding errors in R logo" class="hidden-xs hidden-sm">
+                    <img src="https://brunaw.com/img/beach2.png" alt="Finding errors in R logo" class="visible-xs visible-sm">
+                    <span class="sr-only">Finding errors in R - go to homepage</span>
+                </a>
+                <div class="navbar-buttons">
+                    <button type="button" class="navbar-toggle btn-template-main" data-toggle="collapse" data-target="#navigation">
+                      <span class="sr-only">Toggle Navigation</span>
+                        <i class="fa fa-align-justify"></i>
+                    </button>
+                </div>
+            </div>
+            
+
+            <div class="navbar-collapse collapse" id="navigation">
+                <ul class="nav navbar-nav navbar-right">
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/">Home</a>
+                    
+                  </li>
+                  
+                  <li class="dropdown">
+                    
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Research <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                      
+                        <li><a href="/projects/">Projects</a></li>
+                      
+                        <li><a href="/publications/">Publications</a></li>
+                      
+                        <li><a href="/material/">Material</a></li>
+                      
+                        <li><a href="/software/">Software</a></li>
+                      
+                        <li><a href="/recommendations/">Recommendations</a></li>
+                      
+                    </ul>
+                    
+                  </li>
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/blog/">Posts</a>
+                    
+                  </li>
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/docs/curriculum_vitae.pdf">Curriculum</a>
+                    
+                  </li>
+                  
+                  <li class="dropdown">
+                    
+                    <a href="/contact">Contact</a>
+                    
+                  </li>
+                  
+                </ul>
+            </div>
+            
+
+            <div class="collapse clearfix" id="search">
+
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-btn">
+
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+
+                </span>
+                    </div>
+                </form>
+
+            </div>
+            
+
+        </div>
+    </div>
+    
+
+</div>
+
+
+
+
+        </header>
+
+        <div id="heading-breadcrumbs">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Finding errors in R</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <div id="content">
+            <div class="container">
+
+                <div class="row">
+
+                    
+
+                    <div class="col-md-9" id="blog-post">
+
+                        <p class="text-muted text-uppercase mb-small text-right">By <a href="#">[Bruna Wundervald]</a> | October 6, 2018</p>
+
+                        <div id="post-content">
+                          
+
+
+<p>*Portuguese version of this same post <a href="https://www.curso-r.com/blog/2018-09-03-funcoes/">here</a>!</p>
+<p>On a daily basis, I come across people on Facebook groups, Telegram
+or Twitter having troubles with some tasks in R. These
+problems have two main origins:</p>
+<ol style="list-style-type: decimal">
+<li>difficulties in constructing the algorithm to reach the desired result.</li>
+<li>difficulties in understanding the behavior of some function.</li>
+</ol>
+<p>The focus of this post is to give some notion about how to
+solve the second one: problems using functions. To give a little
+bit of context, we can say that R packages are made by
+the community, voluntarily. Therefore, not all package documentations
+are written in the clearest way possible. Also, currently,
+CRAN only demands a certain amount of rigor regarding the
+functions of a package, and not its documentation. This
+situation is changing for better, which can be noted
+by the existence of recommendations such as the following,
+extracted from <a href="http://r-pkgs.had.co.nz/">Hadley’s book about R packages</a>:</p>
+<blockquote>
+<p>Documentation is one of the most important aspects of a good package. Without it, users won’t know how to use your package. Documentation is also useful for future-you (so you remember what your functions were supposed to do), and for developers extending your package.</p>
+</blockquote>
+<p>While documentation is not perfect, users need to try to understand
+the unexpected errors using other resources. The method I’ll
+describe now is basically looking into the source code of
+functions and search for what is generating the troubles.</p>
+<p>There are functions that can be directly viewed in <code>console</code>,
+by just printing them without the final <code>()</code>, for example:</p>
+<pre class="r"><code>mean &lt;- function(x, y){
+  n &lt;- 2
+  sum_vars &lt;- x + y
+  mean &lt;- sum_vars/n
+  mean
+}
+
+mean</code></pre>
+<pre><code>## function(x, y){
+##   n &lt;- 2
+##   sum_vars &lt;- x + y
+##   mean &lt;- sum_vars/n
+##   mean
+## }</code></pre>
+<p>Just by running the name of the function we access
+the code that composes it. Then if we try,
+for example:</p>
+<pre class="r"><code>mean(2, &quot;1&quot;)</code></pre>
+<pre><code>## Error in x + y: non-numeric argument to binary operator</code></pre>
+<p>Well, what does that mean? For the new user, it might not be
+so obvious, but sum 2 and “1” doesn’t work in R. Although they simply look
+like two numbers, they’re actually two different objects, with
+two different classes - 2 is a numeric, but “1” is a character.</p>
+<p>The strategy here is just to copy the function code
+and run line by line until the error is found. Remember to
+create the necessary objects first (the arguments the function
+receives), like this:</p>
+<pre class="r"><code>x &lt;- 2              # The first argument of the function
+y &lt;- &quot;1&quot;            # The second argument of the function
+
+# Code of the created &#39;mean&#39; function   
+n &lt;- 2
+sum_vars &lt;- x + y  # error found here!</code></pre>
+<pre><code>## Error in x + y: non-numeric argument to binary operator</code></pre>
+<pre class="r"><code>mean &lt;- sum_vars/n</code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): object &#39;sum_vars&#39; not found</code></pre>
+<p>This was pretty simple because the function has just a few lines of code,
+and we get the error already in the second line. Now,
+is way easier to think about the probable reason of the problem
+than just trying to interpret the error message. Sometimes, the
+question is exactly about using objects with the wrong structure,
+and this is also what causes the weirdest errors.</p>
+<p>The example above is with just a simple, short function. Usually,
+you’ll come across extensive functions or that when printed in the
+<code>console</code> won’t show the code, but the <code>method</code> used, for
+example:</p>
+<pre class="r"><code># The mean function that exists in R base
+base::mean</code></pre>
+<pre><code>## function (x, ...) 
+## UseMethod(&quot;mean&quot;)
+## &lt;bytecode: 0x7fd5dfc794a0&gt;
+## &lt;environment: namespace:base&gt;</code></pre>
+<p>And how we interpret that? We’re actually looking at a generic
+function of the S3 class, that calls a method to use. There are
+different methods for different object types.</p>
+<p>Let’s use <code>base::mean</code> as an example. Which are the objects
+that can be used in this function? In general, we use
+numeric vectors, but the function can also deal with other types,
+such as dates. What we mean with this is that the <strong>same function
+can perform the same task with different object types</strong>, by
+calling the specific <strong>methods</strong>.</p>
+<p>And what are the methods? A method is a function associated
+with a particular type of object. We can check the available methods with:</p>
+<pre class="r"><code>methods(mean)</code></pre>
+<pre><code>## [1] mean.Date     mean.default  mean.difftime mean.POSIXct  mean.POSIXlt 
+## [6] mean.quosure*
+## see &#39;?methods&#39; for accessing help and source code</code></pre>
+<p>(depending on the package, the methods aren’t exported. If you’re
+dealing with one of those, try using the operator <code>:::</code>, as
+<code>dplyr:::filter.tbl_df</code>, for example!)</p>
+<p>Now we know which methods can be used for the function
+<code>base::mean</code>. We can see the code by running the
+combination <code>desired-function.specific-method</code>, without
+the final <code>()</code>:</p>
+<pre class="r"><code>base::mean.default</code></pre>
+<pre><code>## function (x, trim = 0, na.rm = FALSE, ...) 
+## {
+##     if (!is.numeric(x) &amp;&amp; !is.complex(x) &amp;&amp; !is.logical(x)) {
+##         warning(&quot;argument is not numeric or logical: returning NA&quot;)
+##         return(NA_real_)
+##     }
+##     if (na.rm) 
+##         x &lt;- x[!is.na(x)]
+##     if (!is.numeric(trim) || length(trim) != 1L) 
+##         stop(&quot;&#39;trim&#39; must be numeric of length one&quot;)
+##     n &lt;- length(x)
+##     if (trim &gt; 0 &amp;&amp; n) {
+##         if (is.complex(x)) 
+##             stop(&quot;trimmed means are not defined for complex data&quot;)
+##         if (anyNA(x)) 
+##             return(NA_real_)
+##         if (trim &gt;= 0.5) 
+##             return(stats::median(x, na.rm = FALSE))
+##         lo &lt;- floor(n * trim) + 1
+##         hi &lt;- n + 1 - lo
+##         x &lt;- sort.int(x, partial = unique(c(lo, hi)))[lo:hi]
+##     }
+##     .Internal(mean(x))
+## }
+## &lt;bytecode: 0x7fd5de00e430&gt;
+## &lt;environment: namespace:base&gt;</code></pre>
+<p>Let’s get back to the discovery of error sources. Say we run the
+following line of code, which won’t go so well:</p>
+<pre class="r"><code>base::mean(c(&quot;1&quot;, 3))</code></pre>
+<pre><code>## Warning in mean.default(c(&quot;1&quot;, 3)): argument is not numeric or logical:
+## returning NA</code></pre>
+<pre><code>## [1] NA</code></pre>
+<p>Note that this is not an error, but a <code>warning</code> message. Anyway,
+the <code>NA</code> is certainly not the desired output when trying to obtain
+the mean of two numbers. What happened? We’ll check it by
+using the code of <code>base::mean.default</code>:</p>
+<pre class="r"><code># Defining the vector which is the argument of the function
+x &lt;- c(&quot;1&quot;, 3)
+
+# Code of  base::mean.default 
+if (!is.numeric(x) &amp;&amp; !is.complex(x) &amp;&amp; !is.logical(x)) {
+  
+  warning(&quot;argument is not numeric or logical: returning NA&quot;)
+  return(NA_real_)
+}</code></pre>
+<pre><code>## Warning: argument is not numeric or logical: returning NA</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code># We can stop here as the error was already found!</code></pre>
+<p>In the first line of the function, we have the indication
+of the problem: the vector is neither numeric, complex or logical. If
+we want the function to work, is must receive those types of objects.
+Well, now is easier to understand what was done wrong!</p>
+<div id="why-should-i-try-to-understand-the-errors" class="section level1">
+<h1>Why should I try to understand the errors?</h1>
+<ol style="list-style-type: decimal">
+<li>Making mistakes is a great way to learn.</li>
+</ol>
+<p>Broadly, in my experience with searching errors in functions, I
+always end up learning something new. The own correction of the error
+generally leads me to know something that wasn’t quite
+obvious before. The errors make me look for a better understanding
+of their existence, which hence leads to an improvement in
+the comprehension about programming logic and R in general.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Your own independence.</li>
+</ol>
+<p>Is always more efficient being able to solve your own problems. Not
+rarely, I see questions about R in the internet
+that take a long time to have a proper answer. With a little deeper
+search for the source of your errors and its consequent solution,
+this waiting will be avoided (not that you shouldn’t make
+questions, of course).</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Exposition to the diversity of “coding styles” we have in
+the community.</li>
+</ol>
+<p>Particularly, I can comment that, since R packages are made by the
+community, there is a wide diversity in the ways they’re written.
+The contact with this diversity, aka going deep in how functions
+are coded, leads me not only to learn more about R but also about
+how to refine my own coding style.</p>
+</div>
+<div id="wrap-up" class="section level1">
+<h1>Wrap-up</h1>
+<p>In this blog post, I explained a bit about how to search for errors
+in R functions. We talked about:</p>
+<ul>
+<li>how to see the source code of simple functions;</li>
+<li>how to see the source code of the S3 class functions;</li>
+<li>how to use these code for indentifying the erros;</li>
+<li>how we can learn with our own mistakes;</li>
+<li>how we can save time by learning about finding &amp; fixing errors.</li>
+</ul>
+<p>That’s it for now. I hope you liked it. Any questions can be addressed
+to me directly or here via comments!</p>
+</div>
+
+                        </div>
+                        
+                        
+
+                    </div>
+                    
+
+                    
+
+                    
+
+                    <div class="col-md-3">
+
+                        
+
+                        
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Search</h3>
+    </div>
+
+    <div class="panel-body">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" role="search">
+            <div class="input-group">
+                <input type="search" name="q" class="form-control" placeholder="Search">
+                <input type="hidden" name="sitesearch" value="https://brunaw.com/">
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-template-main"><i class="fa fa-search"></i></button>
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+<div class="panel panel-default sidebar-menu">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">Categories</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="nav nav-pills nav-stacked">
+            
+            <li><a href="https://brunaw.com/categories/debugging">debugging (1)</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="panel sidebar-menu">
+    <div class="panel-heading">
+      <h3 class="panel-title">Tags</h3>
+    </div>
+
+    <div class="panel-body">
+        <ul class="tag-cloud">
+            
+            <li><a href="https://brunaw.com/tags/r"><i class="fa fa-tags"></i> r</a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+
+
+                        
+
+                    </div>
+                    
+
+                    
+
+                </div>
+                
+
+            </div>
+            
+        </div>
+        
+
+        <footer id="footer">
+    <div class="container">
+
+        
+        <div class="col-md-4 col-sm-6">
+            <h4>About us</h4>
+
+            <!-- raw HTML omitted -->
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+        <div class="col-md-4 col-sm-6">
+
+            
+
+        </div>
+        
+
+        
+        <div class="col-md-4 col-sm-6">
+
+          <h4>Contact</h4>
+
+            <!-- raw HTML omitted -->
+
+          
+
+            <hr class="hidden-md hidden-lg hidden-sm">
+
+        </div>
+        
+        
+
+    </div>
+    
+</footer>
+
+
+
+
+
+
+
+<div id="copyright">
+    <div class="container">
+        <div class="col-md-12">
+            
+            <p class="pull-left">Copyright (c) 2018; all rights reserved.</p>
+            
+            <p class="pull-right">
+              Template by <a href="http://bootstrapious.com/free-templates">Bootstrapious</a>.
+              
+
+              Ported to Hugo by <a href="https://github.com/devcows/hugo-universal-theme">DevCows</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+    </div>
+    
+
+    
+<script src="//code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0/jquery.counterup.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-parallax/1.1.3/jquery-parallax.js"></script>
+
+<script src="//maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+<script src="https://brunaw.com/js/hpneo.gmaps.js"></script>
+<script src="https://brunaw.com/js/gmaps.init.js"></script>
+<script src="https://brunaw.com/js/front.js"></script>
+
+
+<script src="https://brunaw.com/js/owl.carousel.min.js"></script>
+
+
+  </body>
+</html>
