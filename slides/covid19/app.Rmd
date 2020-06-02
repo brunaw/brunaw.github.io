@@ -1,0 +1,91 @@
+---
+title: "COVID-19"
+output:  
+  flexdashboard::flex_dashboard:
+    theme: lumen
+    background: pink
+    orientation: column
+    vertical_layout: scroll
+    output_format: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+Daily cases
+=======================================================================
+
+
+Daily cases {.tabset}
+-----------------------------------------------------------------------
+
+### Cases
+![](plots/daily.png)
+
+### Deaths
+![](plots/deaths.png)
+
+
+### ICU admissions
+![](plots/icu.png)
+
+
+### Hospital Admissions
+![](plots/hospitalised.png)
+
+
+
+
+Counties
+=======================================================================
+
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### Cases
+
+![](plots/daily_county.png)
+
+
+### Deaths
+
+![](plots/deaths_county.png)
+
+
+###  ICU admissions
+![](plots/icu_county.png)
+
+
+
+
+###  Hospital admissions
+![](plots/hosp_county.png)
+
+
+
+
+Survival plots
+=======================================================================
+
+
+Survival plots {.tabset}
+-----------------------------------------------------------------------
+
+### Survival curve
+
+![](plots/surv_simple.png)
+
+
+### Age
+
+![](plots/surv_age.png)
+
+
+### Sex
+![](plots/surv_sex.png)
+
+
+### ICU
+![](plots/surv_icu.png)
+
