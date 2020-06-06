@@ -34,10 +34,10 @@ brunadaviesw@gmail.com --   &#34;Those who know, do. Those that understand, teac
     
     <item>
       <title>Book Recommendations</title>
-      <link>https://brunaw.com/recommendations/</link>
+      <link>https://brunaw.com/books/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://brunaw.com/recommendations/</guid>
+      <guid>https://brunaw.com/books/</guid>
       <description></description>
     </item>
     
@@ -122,6 +122,17 @@ University of California · Davis (UC-Davis).&#34;],{&#34;interactive&#34;:false
   Google Scholar  
          Undergrad Thesis DOWNLOAD
   Machine learning and chord based feature engineering for genre prediction in popular Brazilian music  Abstract: Music genre can be hard to describe: many factors are involved, such as style, music technique, and historical context.</description>
+    </item>
+    
+    <item>
+      <title>Recommendations</title>
+      <link>https://brunaw.com/recommendations/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://brunaw.com/recommendations/</guid>
+      <description>Recommendations Every now and then, people ask me about programming/statistics/machine learning recommendations in general. This page is a compilation of things I usually recommend in such situations.
+See also this link.
+ Programming: R  List of R resources in Portuguese &amp;amp; English Machine Learning with R Advanced Statistical Computing Laplaces Demon Data Visualization in the Tidyverse by Allison Hill Data Visualisation (Fronkonstin)   python  Fluent python Visualisation Python for statisticians Method Chaining Bayes py Python for DS &amp;amp; AI   c++  CS Fundamental courses Lecturer’s github Introduction à la programmation orientée objet (en C++)   Julia  Learning resources Code snippets List of packages Julia course in Coursera Tutorials My own Julia presentation    Machine Learning/Statistics Bayesian stuff  Case studies in Stan Bayesian Regression Statistical Rethinking BART BART by Andrew Parnell Doing Bayesian Data Analysis Survival Analysis in Stan MCMC tutorials Bayesian Neural Networks Laplaces Demon Archive PGMs PGMs 2 PGMs 3 David Blei’s page   Miscellaneous Machine Learning  NN from scratch Probabilistic Graphical Models notes GLM notes Variable Selection by Andrew Parnell Feature Engineering Chris Albon’s notes Visualisation references MCMC examples ML by Larry Wasserman Fast AI tidymodels MLSS 2019 London - Full Videos Isak’s summary - MLSS 2019 Variational Inference Mathematical Tours   Probability and Statistics  Prob &amp;amp; Stats Cookbook Prob &amp;amp; Stats by Larry Wasserman Probabilistic modelling examples Measure Theory Measure Theory notes Measure Theory playlist   Coursera courses  Bayesian Methods for Machine Learning Intro to Deep Learning NLP Practical Reinforcement Learning Probabilistic Graphical Models Information Theory   Books Book recommendations listed here.</description>
     </item>
     
     <item>
