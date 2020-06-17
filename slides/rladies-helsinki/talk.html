@@ -87,6 +87,7 @@ class: inverse, middle
 ---
 class: middle
 
+
 # Summary
 
 - Tree-based models
@@ -98,7 +99,13 @@ class: middle
   - Building a modelling function
   - Training all models 
   - Evaluating the models
+  
+#### Find this talk at: http://brunaw.com/slides/rladies-helsinki/talk.html
+
+#### GitHub: https://github.com/brunaw/tidyverse-for-ml
+
 ---
+
 
 # Motivation
 
@@ -167,9 +174,9 @@ the greatest reduction in the variance of `\(Y\)`.
 
 # Gain penalization for tree regularization
 
-- Firstly presented in (Deng and Runger, 2013):
+- Firstly presented in Deng and Runger (2013):
   - The authors **penalise the gain (RSS reduction)** of each 
-  variable, for each tree when building a mdoel
+  variable, for each tree when building a model
 
 - The main idea is to weigh the gain of each variable, with
 
@@ -188,7 +195,7 @@ More details:  *Wundervald, B, A. Parnell, and K. Domijan (2020). “Generalizin
 ---
 ### Modelling: tree-based methods
 
-  - Trees (CART): 1 tree, `\(\texttt{mtry}\)` = all available variables
+  - Trees (CART): 1 tree, `\(\texttt{mtry}\)` = # all available variables
   
   - *Bagging*: average of many trees, `\(\texttt{mtry}\)` = # all available variables
   
@@ -199,7 +206,7 @@ More details:  *Wundervald, B, A. Parnell, and K. Domijan (2020). “Generalizin
   same as above, but with an "extra" penalization when a new variable
  is to be picked in a deep node of a tree:
  
-`$$\begin{equation} Gain_{R}(\mathbf{X}_{i}, t, \mathbb{T}) =  \begin{cases} \lambda_{i}^{d_{\mathbb{T}}} \Delta(i, t), \thinspace i \notin \mathbb{U} \text{ and} \\ \Delta(i, t), \thinspace i \in  \mathbb{U}, \end{cases} \end{equation}$$`
+`$$\begin{equation} Gain_{R}(\mathbf{X}_{i}, t, \mathbb{T}) =  \begin{cases} \lambda_{i}^{d_{\mathbb{T}}} \Delta(i, t), \thinspace i \notin F \text{ and} \\ \Delta(i, t), \thinspace i \in  F, \end{cases} \end{equation}$$`
 
 where `\(d_{\mathbb{T}}\)` is the current depth of the `\(\mathbb{T}\)` tree, 
 `\(\mathbb{T} = (1, \dots, \texttt{ntree})\)`, for the `\(i\)`-th feature.
@@ -227,7 +234,7 @@ for that
 
 - 50 Predictors:
   - Current date  
-  - the 14-day lagged ridership at this and other stations (units: thousands of rides/day)
+  - The 14-day lagged ridership at this and other stations (units: thousands of rides/day)
   - Weather information
   - Sport teams schedules
   - +
@@ -247,7 +254,8 @@ class: middle
 ```{r
 library(tidyverse)
 library(tidymodels)
-library(ranger)
+library(ranger) # for tree-based models
+
 data &lt;- dials::Chicago
 
 data %&gt;%  
@@ -319,13 +327,21 @@ data_tibble &lt;- rep(list(data), 10) %&gt;%
 ```{r
 models &lt;- list(
  tree = list(mtry = ncol(data) - 1, trees = 1, reg.factor = 1, depth = FALSE),
+ 
  bagging = list(mtry = ncol(data) - 1, trees = 100, reg.factor = 1, depth = FALSE), 
+ 
  bagging_reg = list(mtry = ncol(data) - 1, trees = 100, reg.factor = 0.7, depth = FALSE),
+ 
  bagging_reg_dep = list(mtry = ncol(data) - 1, trees = 100, reg.factor = 0.7, depth = TRUE), 
+ 
  forest = list(mtry = sqrt(ncol(data) - 1), trees = 100, reg.factor = 1, depth = FALSE),
+ 
  reg_forest =  list(mtry = (ncol(data) - 1)/2, trees = 100, reg.factor = 0.7, depth = FALSE),
+ 
  reg_forest_dep =  list(mtry = (ncol(data) - 1)/2, trees = 100, reg.factor = 0.7, depth = TRUE),
+ 
  reg_forest2 =  list(mtry = (ncol(data) - 1)/2, trees = 100, reg.factor = 0.2, depth = FALSE), 
+ 
  reg_forest_dep2 = list(mtry = (ncol(data)-1)/2, trees = 100, reg.factor = 0.2, depth = TRUE)) %&gt;% 
  enframe(name = 'model', value = 'parameters')
 ```
@@ -334,7 +350,11 @@ models &lt;- list(
 
 
 
-.pull-left[
+
+---
+
+class: middle
+
 Adding the models to our main `tibble`:
 
 ```{r
@@ -342,16 +362,11 @@ data_tibble &lt;- data_tibble %&gt;%
 *  crossing(models) %&gt;% 
    arrange(model)
 ```
-]
 
-
----
-
-class: middle
 
 # What do we have so far?
 
-A list with:
+A tibble with:
   - All the train and test data
   - Their combinations with the all the model configurations
 
@@ -379,7 +394,7 @@ modelling &lt;- function(train, mtry = NULL, trees = NULL,
                       reg.factor = 1, depth = FALSE, 
                       formula = ridership ~ ., mode = "regression") {
   
-  model_setup &lt;-   parsnip::rand_forest(mode = mode, mtry = mtry, trees = trees) %&gt;% 
+  model_setup &lt;- parsnip::rand_forest(mode = mode, mtry = mtry, trees = trees) %&gt;% 
     parsnip::set_engine("ranger", regularization.factor = reg.factor, 
                                   regularization.usedepth = depth)
 
@@ -422,10 +437,9 @@ modelling &lt;- function(train, mtry = NULL, trees = NULL,
 
 ---
 
-# Step 4. Training all models (70) at once -- might be slow (!)
+# Step 4. Training all models (90) at once -- might be slow (!)
 
 ```{r
-start_time &lt;- Sys.time()
 
 training_models &lt;- data_tibble %&gt;% 
   mutate(
@@ -434,9 +448,6 @@ training_models &lt;- data_tibble %&gt;%
            ~list_modify(.x, train = .y)))  %&gt;% 
   mutate(model_trained = invoke_map(modelling, all_parameters))
 
-end_time &lt;- Sys.time() 
-
-end_time - start_time  # 6.48 mins
 ```
 
 
@@ -454,8 +465,8 @@ end_time - start_time  # 6.48 mins
   - R-squared
   
 ```{r
-mse &lt;- function(model, test, formula = ridership ~ .,
-us_hol = timeDate::listHolidays() %&gt;% str_subset("(^US)|(Easter)")){
+rmse &lt;- function(model, test, formula = ridership ~ .,
+        us_hol = timeDate::listHolidays() %&gt;% str_subset("(^US)|(Easter)")){
   
   rec &lt;- recipe(formula, data = test) %&gt;% 
     step_holiday(date, holidays = us_hol) %&gt;%  # Include US holidays
@@ -481,17 +492,20 @@ n_variables &lt;- function(model){
 
 ```r
 results &lt;- training_models %&gt;% 
-  mutate(mse = map2_dbl(.x = model_trained, .y = map(train_test, testing), mse), 
+  mutate(rmse = map2_dbl(.x = model_trained, .y = map(train_test, testing), rmse), 
     n_variables = map_int(model_trained, n_variables),
     rsquared = map_dbl(model_trained, ~{.x$fit$r.squared})) 
 ```
+
+
+
 
 &lt;table class="table table-condensed table-hover" style="margin-left: auto; margin-right: auto;"&gt;
 &lt;caption&gt;Mean results per model combination&lt;/caption&gt;
  &lt;thead&gt;
   &lt;tr&gt;
    &lt;th style="text-align:left;"&gt; model &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; mse &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; rmse &lt;/th&gt;
    &lt;th style="text-align:left;"&gt; n_variables &lt;/th&gt;
    &lt;th style="text-align:left;"&gt; rsquared &lt;/th&gt;
   &lt;/tr&gt;
@@ -499,57 +513,57 @@ results &lt;- training_models %&gt;%
 &lt;tbody&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; bagging &lt;/td&gt;
-   &lt;td style="text-align:left;width: 2cm; "&gt; &lt;span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: lightgreen; width: 60.94%"&gt;1.518&lt;/span&gt; &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 71 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; &lt;span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: lightgreen; width: 100.00%"&gt;0.941&lt;/span&gt; &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; &lt;span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: lightgreen; width: 60.47%"&gt;1.56&lt;/span&gt; &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 71 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &lt;span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: lightgreen; width: 100.00%"&gt;0.94&lt;/span&gt; &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; bagging_reg &lt;/td&gt;
-   &lt;td style="text-align:left;width: 2cm; "&gt; 2.183 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 13.9 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.877 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 2.29 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 13.5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.88 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; bagging_reg_dep &lt;/td&gt;
-   &lt;td style="text-align:left;width: 2cm; "&gt; 2.491 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; &lt;span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: lightgreen; width: 16.48%"&gt;11.7&lt;/span&gt; &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.842 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 2.58 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; &lt;span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: lightgreen; width: 16.48%"&gt;11.7&lt;/span&gt; &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.83 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; forest &lt;/td&gt;
-   &lt;td style="text-align:left;width: 2cm; "&gt; 2.097 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 71 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.886 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 2.12 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 71 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.89 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; reg_forest &lt;/td&gt;
-   &lt;td style="text-align:left;width: 2cm; "&gt; 2.201 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 26.1 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.873 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 2.22 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 26.8 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.88 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; reg_forest_dep &lt;/td&gt;
-   &lt;td style="text-align:left;width: 2cm; "&gt; 2.247 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 25.4 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 2.31 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 24.4 &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; 0.87 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; reg_forest_dep2 &lt;/td&gt;
-   &lt;td style="text-align:left;width: 2cm; "&gt; 2.214 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 26.1 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.87 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 2.37 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 25.9 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.86 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; reg_forest2 &lt;/td&gt;
-   &lt;td style="text-align:left;width: 2cm; "&gt; 2.333 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 24.7 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.858 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 2.41 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 24.9 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.86 &lt;/td&gt;
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; tree &lt;/td&gt;
-   &lt;td style="text-align:left;width: 2cm; "&gt; 2.298 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 63.8 &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; 0.866 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 2.41 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2cm; "&gt; 64.5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 0.86 &lt;/td&gt;
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -557,7 +571,7 @@ results &lt;- training_models %&gt;%
 
 ---
 
-## A closer look at the MSE
+## A closer look at the RMSE
 
 
 
@@ -571,13 +585,13 @@ results &lt;- training_models %&gt;%
 
 ```
 # A tibble: 90 x 10
-  index data  train_test model parameters all_parameters model_trained   mse
+  index data  train_test model parameters all_parameters model_trained  rmse
   &lt;int&gt; &lt;lis&gt; &lt;list&gt;     &lt;chr&gt; &lt;list&gt;     &lt;list&gt;         &lt;list&gt;        &lt;dbl&gt;
-1     1 &lt;tib… &lt;split [4… bagg… &lt;named li… &lt;named list [… &lt;fit[+]&gt;       1.43
-2     2 &lt;tib… &lt;split [4… bagg… &lt;named li… &lt;named list [… &lt;fit[+]&gt;       1.52
-3     3 &lt;tib… &lt;split [4… bagg… &lt;named li… &lt;named list [… &lt;fit[+]&gt;       1.60
-4     4 &lt;tib… &lt;split [4… bagg… &lt;named li… &lt;named list [… &lt;fit[+]&gt;       1.58
-5     5 &lt;tib… &lt;split [4… bagg… &lt;named li… &lt;named list [… &lt;fit[+]&gt;       1.51
+1     1 &lt;tib… &lt;split [4… bagg… &lt;named li… &lt;named list [… &lt;fit[+]&gt;       1.44
+2     2 &lt;tib… &lt;split [4… bagg… &lt;named li… &lt;named list [… &lt;fit[+]&gt;       1.44
+3     3 &lt;tib… &lt;split [4… bagg… &lt;named li… &lt;named list [… &lt;fit[+]&gt;       1.56
+4     4 &lt;tib… &lt;split [4… bagg… &lt;named li… &lt;named list [… &lt;fit[+]&gt;       1.60
+5     5 &lt;tib… &lt;split [4… bagg… &lt;named li… &lt;named list [… &lt;fit[+]&gt;       1.50
 # … with 85 more rows, and 2 more variables: n_variables &lt;int&gt;, rsquared &lt;dbl&gt;
 ```
 

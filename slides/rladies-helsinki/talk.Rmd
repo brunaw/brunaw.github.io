@@ -108,6 +108,7 @@ class: inverse, middle
 ---
 class: middle
 
+
 # Summary
 
 - Tree-based models
@@ -119,7 +120,13 @@ class: middle
   - Building a modelling function
   - Training all models 
   - Evaluating the models
+  
+#### Find this talk at: http://brunaw.com/slides/rladies-helsinki/talk.html
+
+#### GitHub: https://github.com/brunaw/tidyverse-for-ml
+
 ---
+
 
 # Motivation
 
@@ -192,9 +199,9 @@ the greatest reduction in the variance of $Y$.
 
 # Gain penalization for tree regularization
 
-- Firstly presented in `r Cite(bibs[key = "guided"])`:
+- Firstly presented in `r Citet(bibs[key = "guided"])`:
   - The authors **penalise the gain (RSS reduction)** of each 
-  variable, for each tree when building a mdoel
+  variable, for each tree when building a model
 
 - The main idea is to weigh the gain of each variable, with
 
@@ -213,7 +220,7 @@ More details:  *Wundervald, B, A. Parnell, and K. Domijan (2020). “Generalizin
 ---
 ### Modelling: tree-based methods
 
-  - Trees (CART): 1 tree, $\texttt{mtry}$ = all available variables
+  - Trees (CART): 1 tree, $\texttt{mtry}$ = # all available variables
   
   - *Bagging*: average of many trees, $\texttt{mtry}$ = # all available variables
   
@@ -224,7 +231,7 @@ More details:  *Wundervald, B, A. Parnell, and K. Domijan (2020). “Generalizin
   same as above, but with an "extra" penalization when a new variable
  is to be picked in a deep node of a tree:
  
-$$\begin{equation} Gain_{R}(\mathbf{X}_{i}, t, \mathbb{T}) =  \begin{cases} \lambda_{i}^{d_{\mathbb{T}}} \Delta(i, t), \thinspace i \notin \mathbb{U} \text{ and} \\ \Delta(i, t), \thinspace i \in  \mathbb{U}, \end{cases} \end{equation}$$
+$$\begin{equation} Gain_{R}(\mathbf{X}_{i}, t, \mathbb{T}) =  \begin{cases} \lambda_{i}^{d_{\mathbb{T}}} \Delta(i, t), \thinspace i \notin F \text{ and} \\ \Delta(i, t), \thinspace i \in  F, \end{cases} \end{equation}$$
 
 where $d_{\mathbb{T}}$ is the current depth of the $\mathbb{T}$ tree, 
 $\mathbb{T} = (1, \dots, \texttt{ntree})$, for the $i$-th feature.
@@ -252,7 +259,7 @@ for that
 
 - 50 Predictors:
   - Current date  
-  - the 14-day lagged ridership at this and other stations (units: thousands of rides/day)
+  - The 14-day lagged ridership at this and other stations (units: thousands of rides/day)
   - Weather information
   - Sport teams schedules
   - +
@@ -272,7 +279,8 @@ class: middle
 ```{r
 library(tidyverse)
 library(tidymodels)
-library(ranger)
+library(ranger) # for tree-based models
+
 data <- dials::Chicago
 
 data %>%  
@@ -351,13 +359,21 @@ print(data_tibble, n = 3)
 ```{r
 models <- list(
  tree = list(mtry = ncol(data) - 1, trees = 1, reg.factor = 1, depth = FALSE),
+ 
  bagging = list(mtry = ncol(data) - 1, trees = 100, reg.factor = 1, depth = FALSE), 
+ 
  bagging_reg = list(mtry = ncol(data) - 1, trees = 100, reg.factor = 0.7, depth = FALSE),
+ 
  bagging_reg_dep = list(mtry = ncol(data) - 1, trees = 100, reg.factor = 0.7, depth = TRUE), 
+ 
  forest = list(mtry = sqrt(ncol(data) - 1), trees = 100, reg.factor = 1, depth = FALSE),
+ 
  reg_forest =  list(mtry = (ncol(data) - 1)/2, trees = 100, reg.factor = 0.7, depth = FALSE),
+ 
  reg_forest_dep =  list(mtry = (ncol(data) - 1)/2, trees = 100, reg.factor = 0.7, depth = TRUE),
+ 
  reg_forest2 =  list(mtry = (ncol(data) - 1)/2, trees = 100, reg.factor = 0.2, depth = FALSE), 
+ 
  reg_forest_dep2 = list(mtry = (ncol(data)-1)/2, trees = 100, reg.factor = 0.2, depth = TRUE)) %>% 
  enframe(name = 'model', value = 'parameters')
 ```
@@ -379,7 +395,11 @@ bagging_reg_dep = list(mtry = ncol(data) - 1, trees = 100, reg.factor = 0.7, dep
 
 
 
-.pull-left[
+
+---
+
+class: middle
+
 Adding the models to our main `tibble`:
 
 ```{r
@@ -387,16 +407,11 @@ data_tibble <- data_tibble %>%
 *  crossing(models) %>% 
    arrange(model)
 ```
-]
 
-
----
-
-class: middle
 
 # What do we have so far?
 
-A list with:
+A tibble with:
   - All the train and test data
   - Their combinations with the all the model configurations
 
@@ -420,7 +435,7 @@ modelling <- function(train, mtry = NULL, trees = NULL,
                       reg.factor = 1, depth = FALSE, 
                       formula = ridership ~ ., mode = "regression") {
   
-  model_setup <-   parsnip::rand_forest(mode = mode, mtry = mtry, trees = trees) %>% 
+  model_setup <- parsnip::rand_forest(mode = mode, mtry = mtry, trees = trees) %>% 
     parsnip::set_engine("ranger", regularization.factor = reg.factor, 
                                   regularization.usedepth = depth)
 
@@ -487,10 +502,9 @@ modelling <- function(train, mtry = NULL, trees = NULL,
 
 ---
 
-# Step 4. Training all models (70) at once -- might be slow (!)
+# Step 4. Training all models (90) at once -- might be slow (!)
 
 ```{r
-start_time <- Sys.time()
 
 training_models <- data_tibble %>% 
   mutate(
@@ -499,9 +513,6 @@ training_models <- data_tibble %>%
            ~list_modify(.x, train = .y)))  %>% 
   mutate(model_trained = invoke_map(modelling, all_parameters))
 
-end_time <- Sys.time() 
-
-end_time - start_time  # 6.48 mins
 ```
 
 ```{r, echo = FALSE}
@@ -527,8 +538,8 @@ training_models <- data_tibble %>%
   - R-squared
   
 ```{r
-mse <- function(model, test, formula = ridership ~ .,
-us_hol = timeDate::listHolidays() %>% str_subset("(^US)|(Easter)")){
+rmse <- function(model, test, formula = ridership ~ .,
+        us_hol = timeDate::listHolidays() %>% str_subset("(^US)|(Easter)")){
   
   rec <- recipe(formula, data = test) %>% 
     step_holiday(date, holidays = us_hol) %>%  # Include US holidays
@@ -546,7 +557,7 @@ n_variables <- function(model){
 ```
   
 ```{r, echo = FALSE}
-mse <- function(model, test, formula = ridership ~ ., 
+rmse <- function(model, test, formula = ridership ~ ., 
                 us_hol = timeDate::listHolidays() %>% str_subset("(^US)|(Easter)")){
   
   rec <- recipe(formula, data = test) %>% 
@@ -571,32 +582,36 @@ n_variables <- function(model){
 
 ```r
 results <- training_models %>% 
-  mutate(mse = map2_dbl(.x = model_trained, .y = map(train_test, testing), mse), 
+  mutate(rmse = map2_dbl(.x = model_trained, .y = map(train_test, testing), rmse), 
     n_variables = map_int(model_trained, n_variables),
     rsquared = map_dbl(model_trained, ~{.x$fit$r.squared})) 
 ```
 
-```{r, eval = TRUE, echo = FALSE}
-library(formattable)
-library(kableExtra)
-
+```{r, echo = FALSE, eval = TRUE}
 results <- training_models %>% 
   mutate(
-    mse = map2_dbl(.x = model_trained,
+    rmse = map2_dbl(.x = model_trained,
                    .y = map(train_test, testing), 
-                   ~mse(model = .x, test = .y)), 
+                   ~rmse(model = .x, test = .y)), 
     n_variables = map_int(model_trained, n_variables),
     rsquared = map_dbl(model_trained, ~{.x$fit$r.squared})) 
 
 
 tab <- results %>% 
-  select(model, mse, n_variables, rsquared) %>% 
+  select(model, rmse, n_variables, rsquared) %>% 
   group_by(model) %>% 
   summarise_all(mean) %>% 
   arrange(model)
+```
+
+
+```{r, eval = TRUE, echo = FALSE}
+library(formattable)
+library(kableExtra)
+
 
 tab %>% 
-  mutate_if(is.numeric, ~round(.x, 3)) %>% 
+  mutate_if(is.numeric, ~round(.x, 2)) %>% 
   mutate_at(vars(2, 3), 
     ~ifelse(. == min(.), color_bar("lightgreen")(.), .)) %>% 
     mutate_at(vars(4), 
@@ -605,21 +620,23 @@ tab %>%
                caption="Mean results per model combination") %>%
   kable_styling(bootstrap_options = c("condensed", "hover"), 
                 full_width = TRUE) %>% 
+  column_spec(3, width = "2cm")  %>% 
   column_spec(2, width = "2cm")  
 ```
 
 
 ---
 
-## A closer look at the MSE
+## A closer look at the RMSE
 
 ```{r, eval = TRUE, echo = FALSE}
+library(ggridges)
+
+
 p <- results %>% 
-  select(model, mse, n_variables, rsquared) %>% 
-  ggplot(aes(x = mse)) +
-  facet_wrap(~model, ncol = 5) +
-  geom_density(fill = "#f5c04a") +
-  labs(y = "Densities", x = "MSE") +
+  ggplot(aes(x = rmse, y = model)) +
+  geom_density_ridges(scale = 4, fill = "#f5c04a") +
+  labs(y = "Densities", x = "RMSE") +
   theme_classic(18) +
   theme(
     panel.background = element_rect(fill = "transparent"), # bg of the panel
@@ -631,10 +648,9 @@ p <- results %>%
   )
 
 
-
 ggsave(plot = p, filename = "img/results.png", 
-       width = 10.5, height = 7, 
-      device = png(), 
+       width = 8, height = 6.5, 
+       device = png(), 
        bg = "transparent")
 ```
 
