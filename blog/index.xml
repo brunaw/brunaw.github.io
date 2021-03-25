@@ -6,20 +6,10 @@
     <description>Recent content in Blogs on Bruna Wundervald</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 06 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 06 Oct 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://brunaw.com/blog/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Finding errors in R</title>
-      <link>https://brunaw.com/blog/2019/10/06/2019-10-06-finding-errors/</link>
-      <pubDate>Sun, 06 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://brunaw.com/blog/2019/10/06/2019-10-06-finding-errors/</guid>
-      <description>Introduction Decision trees ensembles are a very popular type of machine learning algorithm, which is mostly due to their adaptive nature, high prediction power and, in some sense, interpretability. Random Forests are one form of such ensembles, and they consist of growing many trees in re-samples of the data, and averaging their results at end, creating a bagged ensemble described [@Breiman1996] by
-\[\begin{equation} \hat f(\mathbf{x}) = \sum_{n = 1}^{N_{tree}} \frac{1}{N_{tree}} \hat f_n(\mathbf{x}), \end{equation}\]</description>
-    </item>
     
     <item>
       <title>Finding errors in R</title>
